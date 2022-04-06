@@ -1,0 +1,16 @@
+#!/bin/bash
+
+sudo mkdir -p /home/ec2-user/tools
+sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo /home/ec2-user/tools
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+sudo amazon-linux-extras install epel -y
+sudo amazon-linux-extras install java-openjdk11 -y
+sudo yum install jenkins -y
+sudo service jenkins start
+sudo service jenkins status
+sudo chkconfig jenkins on 
+sudo iptables -A PREROUTING -t nat -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080 
+sudo iptables-save > /etc/sysconfig/iptables
+cd /home/ec2-user/tools
+wget https://github.com/jenkinsci/plugin-installation-manager-tool/releases/download/2.12.3/jenkins-plugin-manager-2.12.3.jar
+java -jar jenkins-plugin-manager-2.12.3.jar --war /usr/share/java/jenkins.war --plugin-download-directory /var/lib/jenkins/plugins --plugins aws-codecommit-trigger:3.0.12 github:1.34.3 deployit-plugin
