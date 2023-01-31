@@ -1,0 +1,15 @@
+yum install jq -q -y
+echo "**** jq installed ****"
+export DEFAULT=$(aws ec2 describe-vpcs --filter Name=is-default,Values=true --query Vpcs[].VpcId --output text)
+echo $DEFAULT
+export SUBNETS=$(aws ec2 \
+  describe-subnets --filters Name=vpc-id,Values=$DEFAULT \
+  | jq -r .Subnets[].SubnetId)
+if [ "$SUBNETS" != "null" ]; then
+  for subnet in $SUBNETS; do
+    echo "Deleting subnet ${subnet}"
+    aws ec2 delete-subnet --subnet-id ${subnet}
+  done
+fi
+echo "**** all subnets deleted from default vpc ****"
+aws ec2 delete-vpc --vpc-id $DEFAULT
