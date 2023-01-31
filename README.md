@@ -9,3 +9,7 @@ This script creates an IAM user, assigns it HTTPS git credentials for CodeCommit
 ## install-jenkins
 
 This script installs Jenkins on an AmazonLinux host and updates iptables to forward the default port (8080) to 80. It also installs a couple of Jenkins plugins.
+
+## deletedefaultvpc
+
+This script deletes the default VPC from an AWS region
